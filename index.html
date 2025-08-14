@@ -191,18 +191,28 @@
     openBtn.dataset.src = src
   }
 
+  // 1) Ligar clic sólo a items que TIENEN data-src (items accionables)
   document.querySelectorAll('.item').forEach(it => {
-    it.addEventListener('click', () => setActiveItem(it))
+    // Si es el item padre (hijo directo de .item-parent) no lo ligamos aquí
+    if (it.parentElement && it.parentElement.classList.contains('item-parent')) return
+    // Solo ligar si tiene data-src
+    if (it.dataset && it.dataset.src) {
+      it.addEventListener('click', () => setActiveItem(it))
+    }
   })
 
-  // Toggle submenu
+  // 2) Toggle submenu en los items padres (sólo despliegan/ocultan)
   document.querySelectorAll('.item-parent > .item').forEach(parent => {
     parent.addEventListener('click', () => {
+      // Opcional: cerrar otros submenus abiertos (descomenta si quieres ese comportamiento)
+      // document.querySelectorAll('.item-parent.open').forEach(op => { if (op !== parent.parentElement) op.classList.remove('open') })
+
       parent.parentElement.classList.toggle('open');
     });
   });
 
-  const first = document.querySelector('.item')
+  // 3) Inicializar: selecciona el primer item accionable
+  const first = document.querySelector('.item[data-src]')
   if(first) setActiveItem(first)
 
   openBtn.addEventListener('click', () => {
@@ -223,6 +233,3 @@
     })
   })
 </script>
-</body>
-</html>
-
