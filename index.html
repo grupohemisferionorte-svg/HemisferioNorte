@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Portal Control Financiero y Operacional</title>
-<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23003366"/><text x="50" y="56" font-size="56" font-family="Inter, Arial, sans-serif" fill="%23ffffff" text-anchor="middle" alignment-baseline="middle">GH</text></svg>'>
 <style>
   :root {
     --color-primary: #003366; /* azul corporativo */
@@ -105,6 +104,7 @@
     border-bottom: 1px solid rgba(0,0,0,0.06);
     background: linear-gradient(180deg, #fff, #fbfdff);
   }
+  #pageTitle { font-weight:600 }
   .controls { margin-left: auto; display: flex; gap: 8px; }
   .btn {
     padding: 8px 12px;
@@ -125,7 +125,7 @@
 <body>
   <div class="app">
     <aside>
-      <div class="brand">Portal Reportería</div>
+      <div class="brand">Portal Reportería Grupo Hemisferio</div>
       <div class="logo">
         <img src="https://raw.githubusercontent.com/grupohemisferionorte-svg/HemisferioNorte/refs/heads/main/LOGO_GRUPO_HEMISFERIO_OK.ai_preview%20(1).png" 
              alt="Logo Grupo Hemisferio">
@@ -134,9 +134,17 @@
       <input class="search" id="search" placeholder="Buscar...">
       <div class="list" id="list">
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
-        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Área Logística</div>
-        
-        <!-- Item con submenu -->
+
+        <!-- Área Logística ahora con submenu (Compras + Bodega) -->
+        <div class="item-parent">
+          <div class="item">Área Logística</div>
+          <div class="submenu">
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Compras</div>
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/ID_BODEGA_REEMPLAZAR">Bodega</div>
+          </div>
+        </div>
+
+        <!-- Área Finanzas -->
         <div class="item-parent">
           <div class="item">Área Finanzas</div>
           <div class="submenu">
@@ -153,7 +161,7 @@
     </aside>
     <div>
       <header>
-        <div style="font-weight:600">Dashboard</div>
+        <div id="pageTitle">Dashboard</div>
         <div class="controls">
           <button class="btn" id="open">Abrir en pestaña</button>
           <button class="btn" id="reload">Recargar</button>
@@ -171,13 +179,28 @@
   const openBtn = document.getElementById('open')
   const reloadBtn = document.getElementById('reload')
   const search = document.getElementById('search')
+  const pageTitle = document.getElementById('pageTitle')
 
   function setActiveItem(el){
+    // quitar outline de todos
     document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
     el.style.outline = '2px solid var(--color-accent)'
+
+    // actualizar título del header
+    let titleText = (el.textContent || '').trim()
+    const parentEl = el.closest('.item-parent')
+    if (parentEl) {
+      const parentLabel = (parentEl.querySelector('> .item')?.textContent || '').trim()
+      if (parentLabel) titleText = `${parentLabel} — ${titleText}`
+    }
+    pageTitle.textContent = titleText
+
+    // cargar iframe
     const src = el.dataset.src
     if(!src){
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>'
+      openBtn.dataset.src = ''
+      try { localStorage.removeItem('lastDashboard'); } catch(e){}
       return
     }
     if(src.trim().startsWith('<iframe')){
@@ -191,9 +214,10 @@
     }
     openBtn.dataset.src = src
 
-    // Guardar selección en localStorage
+    // Guardar selección en localStorage (src y título)
     try {
       localStorage.setItem('lastDashboard', src)
+      localStorage.setItem('lastTitle', titleText)
     } catch (e) {
       console.warn('No se pudo guardar lastDashboard en localStorage:', e)
     }
@@ -201,9 +225,7 @@
 
   // 1) Ligar clic sólo a items que TIENEN data-src (items accionables)
   document.querySelectorAll('.item').forEach(it => {
-    // Si es el item padre (hijo directo de .item-parent) no lo ligamos aquí
     if (it.parentElement && it.parentElement.classList.contains('item-parent')) return
-    // Solo ligar si tiene data-src
     if (it.dataset && it.dataset.src) {
       it.addEventListener('click', () => setActiveItem(it))
     }
@@ -223,12 +245,15 @@
   // 3) Inicializar: restaurar última selección (si existe) o seleccionar el primer item accionable
   (function initSelection(){
     const last = (function(){ try { return localStorage.getItem('lastDashboard') } catch(e){ return null } })()
+    const lastTitle = (function(){ try { return localStorage.getItem('lastTitle') } catch(e){ return null } })()
     const start = last ? document.querySelector(`.item[data-src="${last}"]`) : document.querySelector('.item[data-src]')
     if (start) {
       // si el item está dentro de un submenu, abrir su padre
       const parentItem = start.closest('.item-parent')
       if (parentItem) parentItem.classList.add('open')
       setActiveItem(start)
+      // si hay título guardado y por alguna razón setActiveItem no lo dejó, lo restauramos
+      if (lastTitle) pageTitle.textContent = lastTitle
     } else {
       // si no hay ninguno accionable, mostrar mensaje
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">No hay dashboards configurados.</div>'
@@ -267,6 +292,7 @@
     }
   });
 
+  // Filtro búsqueda
   search.addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase()
     document.querySelectorAll('.item').forEach(it => {
@@ -277,5 +303,3 @@
 </script>
 </body>
 </html>
-
-
