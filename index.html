@@ -147,7 +147,7 @@
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Área Contabilidad</div>
       </div>
       <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:12px">
-        Consejo: Si se necesita crear reportes especificos, favor solicitarlo via mail.
+        Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail.
       </div>
     </aside>
     <div>
@@ -189,6 +189,13 @@
       frameContainer.appendChild(iframe)
     }
     openBtn.dataset.src = src
+
+    // Guardar selección en localStorage
+    try {
+      localStorage.setItem('lastDashboard', src)
+    } catch (e) {
+      console.warn('No se pudo guardar lastDashboard en localStorage:', e)
+    }
   }
 
   // 1) Ligar clic sólo a items que TIENEN data-src (items accionables)
@@ -204,16 +211,28 @@
   // 2) Toggle submenu en los items padres (sólo despliegan/ocultan)
   document.querySelectorAll('.item-parent > .item').forEach(parent => {
     parent.addEventListener('click', () => {
-      // Opcional: cerrar otros submenus abiertos (descomenta si quieres ese comportamiento)
-      // document.querySelectorAll('.item-parent.open').forEach(op => { if (op !== parent.parentElement) op.classList.remove('open') })
-
+      // cerrar otros submenus abiertos (solo 1 abierto a la vez)
+      document.querySelectorAll('.item-parent.open').forEach(op => {
+        if (op !== parent.parentElement) op.classList.remove('open')
+      })
       parent.parentElement.classList.toggle('open');
     });
   });
 
-  // 3) Inicializar: selecciona el primer item accionable
-  const first = document.querySelector('.item[data-src]')
-  if(first) setActiveItem(first)
+  // 3) Inicializar: restaurar última selección (si existe) o seleccionar el primer item accionable
+  (function initSelection(){
+    const last = (function(){ try { return localStorage.getItem('lastDashboard') } catch(e){ return null } })()
+    const start = last ? document.querySelector(`.item[data-src="${last}"]`) : document.querySelector('.item[data-src]')
+    if (start) {
+      // si el item está dentro de un submenu, abrir su padre
+      const parentItem = start.closest('.item-parent')
+      if (parentItem) parentItem.classList.add('open')
+      setActiveItem(start)
+    } else {
+      // si no hay ninguno accionable, mostrar mensaje
+      frameContainer.innerHTML = '<div style="padding:20px;color:#666">No hay dashboards configurados.</div>'
+    }
+  })()
 
   openBtn.addEventListener('click', () => {
     const src = openBtn.dataset.src
@@ -233,3 +252,6 @@
     })
   })
 </script>
+</body>
+</html>
+
