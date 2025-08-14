@@ -60,29 +60,44 @@
     flex-grow: 1;
   }
   .item {
-      background: var(--color-card); /* blanco */
-      color: #003366; /* texto azul oscuro */
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: all 0.2s ease;
+    background: var(--color-card); /* blanco */
+    color: #003366; /* texto azul oscuro */
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
   }
   .item:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(2,6,23,0.12);
     border-color: var(--color-accent);
   }
+
   /* Submenus */
-  .item-parent .sublist {
+  .item-parent .submenu {
     display: none;
     flex-direction: column;
     gap: 6px;
     margin-left: 12px;
   }
-  .item-parent.open .sublist {
+  .item-parent.open .submenu {
     display: flex;
   }
+  .item-parent > .item {
+    position: relative;
+  }
+  .item-parent > .item::after {
+    content: '►';
+    position: absolute;
+    right: 10px;
+    transition: transform 0.2s ease;
+    font-size: 12px;
+  }
+  .item-parent.open > .item::after {
+    transform: rotate(90deg);
+  }
+
   header {
     display: flex; gap: 10px; align-items: center;
     padding: 12px 18px;
@@ -119,20 +134,20 @@
       <div class="list" id="list">
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Área Logística</div>
-
-        <!-- Finanzas con submenu -->
+        
+        <!-- Item con submenu -->
         <div class="item-parent">
-          <div class="item">Área Finanzas ▼</div>
-          <div class="sublist">
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/75bb31c4-d0ce-4b9e-9dae-9bd9b58ffa39">Facturación Proveedores</div>
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">Facturación y Cobranza</div>
+          <div class="item">Área Finanzas</div>
+          <div class="submenu">
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/finanzas-facturacion-proveedores">Facturación Proveedores</div>
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/finanzas-facturacion-ventas">Facturación Ventas</div>
           </div>
         </div>
 
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Área Contabilidad</div>
       </div>
       <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:12px">
-        Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail.
+        Consejo: Si se necesita crear reportes especificos, favor solicitarlo via mail.
       </div>
     </aside>
     <div>
@@ -155,13 +170,6 @@
   const openBtn = document.getElementById('open')
   const reloadBtn = document.getElementById('reload')
   const search = document.getElementById('search')
-
-  // Toggle submenu
-  document.querySelectorAll('.item-parent > .item').forEach(parent => {
-    parent.addEventListener('click', () => {
-      parent.parentElement.classList.toggle('open');
-    });
-  });
 
   function setActiveItem(el){
     document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
@@ -186,6 +194,13 @@
   document.querySelectorAll('.item').forEach(it => {
     it.addEventListener('click', () => setActiveItem(it))
   })
+
+  // Toggle submenu
+  document.querySelectorAll('.item-parent > .item').forEach(parent => {
+    parent.addEventListener('click', () => {
+      parent.parentElement.classList.toggle('open');
+    });
+  });
 
   const first = document.querySelector('.item')
   if(first) setActiveItem(first)
