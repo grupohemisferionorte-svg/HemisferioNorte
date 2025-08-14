@@ -1,9 +1,10 @@
-<!doctype html>
+l>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Portal Control Financiero y Operacional</title>
+<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23003366"/><text x="50" y="56" font-size="56" font-family="Inter, Arial, sans-serif" fill="%23ffffff" text-anchor="middle" alignment-baseline="middle">GH</text></svg>'>
 <style>
   :root {
     --color-primary: #003366; /* azul corporativo */
@@ -124,7 +125,7 @@
 <body>
   <div class="app">
     <aside>
-      <div class="brand">Portal Reportería Grupo Hemisferio</div>
+      <div class="brand">Portal Reportería</div>
       <div class="logo">
         <img src="https://raw.githubusercontent.com/grupohemisferionorte-svg/HemisferioNorte/refs/heads/main/LOGO_GRUPO_HEMISFERIO_OK.ai_preview%20(1).png" 
              alt="Logo Grupo Hemisferio">
@@ -133,19 +134,9 @@
       <input class="search" id="search" placeholder="Buscar...">
       <div class="list" id="list">
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
-
-        <!-- Área Logística ahora con submenu (Compras + Bodega) -->
-        <div class="item-parent">
-          <div class="item">Área Logística</div>
-          <div class="submenu">
-            <!-- Usé el link que ya tenías para logística como 'Compras' -->
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Compras</div>
-            <!-- Reemplaza el placeholder por el link real de Bodega cuando lo tengas -->
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Bodega</div>
-          </div>
-        </div>
-
-        <!-- Área Finanzas (mantengo submenu que ya configuraste) -->
+        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Área Logística</div>
+        
+        <!-- Item con submenu -->
         <div class="item-parent">
           <div class="item">Área Finanzas</div>
           <div class="submenu">
@@ -276,7 +267,6 @@
     }
   });
 
-  // Filtro búsqueda
   search.addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase()
     document.querySelectorAll('.item').forEach(it => {
