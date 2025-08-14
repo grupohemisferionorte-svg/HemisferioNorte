@@ -61,7 +61,7 @@
   }
   .item {
       background: var(--color-card); /* blanco */
-      color: #003366; /* texto azul oscuro, visible sobre blanco */
+      color: #003366; /* texto azul oscuro */
       padding: 8px 10px;
       border-radius: 8px;
       cursor: pointer;
@@ -72,6 +72,16 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(2,6,23,0.12);
     border-color: var(--color-accent);
+  }
+  /* Submenus */
+  .item-parent .sublist {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    margin-left: 12px;
+  }
+  .item-parent.open .sublist {
+    display: flex;
   }
   header {
     display: flex; gap: 10px; align-items: center;
@@ -100,7 +110,7 @@
   <div class="app">
     <aside>
       <div class="brand">Portal Reportería Grupo Hemisferio</div>
-       <div class="logo">
+      <div class="logo">
         <img src="https://raw.githubusercontent.com/grupohemisferionorte-svg/HemisferioNorte/refs/heads/main/LOGO_GRUPO_HEMISFERIO_OK.ai_preview%20(1).png" 
              alt="Logo Grupo Hemisferio">
       </div>
@@ -109,11 +119,20 @@
       <div class="list" id="list">
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Área Logística</div>
-        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">Área Finanzas</div>
+
+        <!-- Finanzas con submenu -->
+        <div class="item-parent">
+          <div class="item">Área Finanzas ▼</div>
+          <div class="sublist">
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/75bb31c4-d0ce-4b9e-9dae-9bd9b58ffa39">Facturación Proveedores</div>
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">Facturación y Cobranza</div>
+          </div>
+        </div>
+
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Área Contabilidad</div>
       </div>
       <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:12px">
-        Consejo: Si se necesita crear reportes especificos, favor solicitarlo via mail.
+        Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail.
       </div>
     </aside>
     <div>
@@ -136,6 +155,13 @@
   const openBtn = document.getElementById('open')
   const reloadBtn = document.getElementById('reload')
   const search = document.getElementById('search')
+
+  // Toggle submenu
+  document.querySelectorAll('.item-parent > .item').forEach(parent => {
+    parent.addEventListener('click', () => {
+      parent.parentElement.classList.toggle('open');
+    });
+  });
 
   function setActiveItem(el){
     document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
@@ -184,3 +210,4 @@
 </script>
 </body>
 </html>
+
