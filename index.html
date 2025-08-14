@@ -1,48 +1,120 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Portal Provisorio - Dashboards Metabase</title>
-  <style>
-    :root{--bg:#0f172a;--card:#ffffff;--muted:#6b7280}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:#f6f7fb}
-    .app{display:grid;grid-template-columns:260px 1fr;height:100vh}
-    aside{background:#0b5; /* Accent for visibility — change as needed */ padding:16px;color:#042;box-shadow:2px 0 8px rgba(0,0,0,0.06)}
-    .brand{font-weight:700;margin-bottom:8px}
-    .desc{font-size:13px;color:rgba(0,0,0,0.6);margin-bottom:12px}
-    .list{display:flex;flex-direction:column;gap:8px}
-    .item{background:white;padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
-    .item:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(2,6,23,0.06)}
-    header{display:flex;gap:10px;align-items:center;padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.06);background:linear-gradient(180deg,#fff,#fbfdff)}
-    .controls{margin-left:auto;display:flex;gap:8px}
-    .btn{padding:8px 12px;border-radius:8px;background:#0b4;color:white;border:0;cursor:pointer}
-    .frame-wrap{height:calc(100vh - 56px)}
-    iframe{width:100%;height:100%;border:0}
-    .search{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);margin-bottom:10px}
-    @media (max-width:900px){.app{grid-template-columns:1fr} aside{display:none}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Portal Control Financiero y Operacional</title>
+<style>
+  :root {
+    --color-primary: #003366; /* azul corporativo */
+    --color-accent: #00b894; /* verde acento */
+    --color-bg: #f6f7fb;
+    --color-muted: #6b7280;
+    --color-card: #ffffff;
+  }
+  html, body {
+    height: 100%; margin: 0;
+    font-family: 'Inter', system-ui, Arial, sans-serif;
+    background: var(--color-bg);
+  }
+  .app {
+    display: grid; grid-template-columns: 260px 1fr; height: 100vh;
+  }
+  aside {
+    background: linear-gradient(180deg, var(--color-primary) 0%, #001f3f 100%);
+    padding: 20px;
+    color: white;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .brand {
+    font-weight: 700; font-size: 18px; margin-bottom: 4px;
+  }
+  .logo {
+    margin: 10px 0 16px 0;
+    display: flex;
+    justify-content: center;
+  }
+  .logo img {
+    max-width: 140px;
+    height: auto;
+    border-radius: 6px;
+    background: white;
+    padding: 4px;
+  }
+  .desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 12px;
+  }
+  .search {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 12px;
+  }
+  .list {
+    display: flex; flex-direction: column; gap: 8px;
+    flex-grow: 1;
+  }
+  .item {
+    background: var(--color-card);
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+  }
+  .item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(2,6,23,0.12);
+    border-color: var(--color-accent);
+  }
+  header {
+    display: flex; gap: 10px; align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: linear-gradient(180deg, #fff, #fbfdff);
+  }
+  .controls { margin-left: auto; display: flex; gap: 8px; }
+  .btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--color-accent);
+    color: white; border: 0; cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .btn:hover { background: #019c80; }
+  .frame-wrap { height: calc(100vh - 56px); }
+  iframe { width: 100%; height: 100%; border: 0; }
+  @media (max-width:900px) {
+    .app { grid-template-columns: 1fr; }
+    aside { display: none; }
+  }
+</style>
 </head>
 <body>
   <div class="app">
     <aside>
       <div class="brand">Portal de Reportes Grupo Hemisferio</div>
-      <div class="desc">Reemplaza cada "METABASE_PUBLIC_LINK" con el enlace público de Metabase que te entrega el modal de "Share / Embed".</div>
-
-      <input class="search" id="search" placeholder="Buscar dashboard... (opcional)" />
-
-      <div class="list" id="list">
-        <!-- Ejemplo de items: reemplaza data-src con la URL pública (o con el src del iframe) -->
-        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">AREA COMERCIAL</div>
-        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">AREA LOGISTICA </div>
-        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">AREA FINANZAS</div>
-        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">AREA CONTABILIDAD</div>
-        <!-- Agrega/quita items según necesites -->
+      <div class="logo">
+        <img src="logo-grupo-hemisferio.png" alt="Logo Grupo Hemisferio">
       </div>
-
-      <div style="margin-top:12px;color:var(--muted);font-size:12px">Consejo: pon nombres descriptivos y ordena por prioridad. Los enlaces públicos son visibles por quien los tenga.</div>
+      <div class="desc">Seleccionar el área para visualizar el reporte creado.</div>
+      <input class="search" id="search" placeholder="Buscar dashboard...">
+      <div class="list" id="list">
+        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
+        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Área Logística</div>
+        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">Área Finanzas</div>
+        <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Área Contabilidad</div>
+      </div>
+      <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:12px">
+        Consejo: pon nombres descriptivos y ordena por prioridad. Los enlaces públicos son visibles por quien los tenga.
+      </div>
     </aside>
-
     <div>
       <header>
         <div style="font-weight:600">Dashboard</div>
@@ -51,81 +123,63 @@
           <button class="btn" id="reload">Recargar</button>
         </div>
       </header>
-
       <div class="frame-wrap">
-        <!-- Por performance, el iframe se crea y se injecta cuando el usuario selecciona un dashboard -->
         <div id="frameContainer" style="width:100%;height:100%"></div>
       </div>
     </div>
   </div>
 
-  <script>
-    const list = document.getElementById('list')
-    const frameContainer = document.getElementById('frameContainer')
-    const openBtn = document.getElementById('open')
-    const reloadBtn = document.getElementById('reload')
-    const search = document.getElementById('search')
+<script>
+  const list = document.getElementById('list')
+  const frameContainer = document.getElementById('frameContainer')
+  const openBtn = document.getElementById('open')
+  const reloadBtn = document.getElementById('reload')
+  const search = document.getElementById('search')
 
-    function setActiveItem(el){
-      // highlight
-      document.querySelectorAll('.item').forEach(i => i.style.boxShadow = 'none')
-      el.style.boxShadow = '0 6px 20px rgba(2,6,23,0.06)'
-      // create iframe
-      const src = el.dataset.src
-      if(!src){
-        frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado. Reemplaza METABASE_PUBLIC_LINK_xxx en el HTML.</div>'
-        return
-      }
-      // if the src looks like a full iframe tag, insert it directly, else build iframe
-      if(src.trim().startsWith('<iframe')){
-        frameContainer.innerHTML = src
-      } else {
-        frameContainer.innerHTML = ''
-        const iframe = document.createElement('iframe')
-        iframe.src = src
-        iframe.id = 'mainFrame'
-        frameContainer.appendChild(iframe)
-      }
-      // update open button
-      openBtn.dataset.src = src
+  function setActiveItem(el){
+    document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
+    el.style.outline = '2px solid var(--color-accent)'
+    const src = el.dataset.src
+    if(!src){
+      frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>'
+      return
     }
+    if(src.trim().startsWith('<iframe')){
+      frameContainer.innerHTML = src
+    } else {
+      frameContainer.innerHTML = ''
+      const iframe = document.createElement('iframe')
+      iframe.src = src
+      iframe.id = 'mainFrame'
+      frameContainer.appendChild(iframe)
+    }
+    openBtn.dataset.src = src
+  }
 
-    // attach clicks
+  document.querySelectorAll('.item').forEach(it => {
+    it.addEventListener('click', () => setActiveItem(it))
+  })
+
+  const first = document.querySelector('.item')
+  if(first) setActiveItem(first)
+
+  openBtn.addEventListener('click', () => {
+    const src = openBtn.dataset.src
+    if(src) window.open(src, '_blank')
+  })
+
+  reloadBtn.addEventListener('click', () => {
+    const iframe = document.getElementById('mainFrame')
+    if(iframe) iframe.contentWindow.location.reload()
+  })
+
+  search.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase()
     document.querySelectorAll('.item').forEach(it => {
-      it.addEventListener('click', () => setActiveItem(it))
+      const visible = it.textContent.toLowerCase().includes(q)
+      it.style.display = visible ? 'block' : 'none'
     })
-
-    // default: click first
-    const first = document.querySelector('.item')
-    if(first) setActiveItem(first)
-
-    openBtn.addEventListener('click', () => {
-      const src = openBtn.dataset.src
-      if(src) window.open(src, '_blank')
-    })
-
-    reloadBtn.addEventListener('click', () => {
-      const iframe = document.getElementById('mainFrame')
-      if(iframe) iframe.contentWindow.location.reload()
-    })
-
-    // search filter
-    search.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase()
-      document.querySelectorAll('.item').forEach(it => {
-        const visible = it.textContent.toLowerCase().includes(q)
-        it.style.display = visible ? 'block' : 'none'
-      })
-    })
-  </script>
-
-  <!--
-    INSTRUCCIONES RÁPIDAS:
-    1) En Metabase, abre el dashboard -> Share / Embed -> Create public link (o copiar el iframe) y pega la URL aquí reemplazando METABASE_PUBLIC_LINK_*.
-    2) Guarda este archivo como index.html y súbelo a GitHub Pages, Netlify o Vercel (drag & drop funciona para los 3).
-    3) Comparte la URL con tu equipo.
-
-    ADVERTENCIA: los enlaces públicos de Metabase son accesibles por quien tenga el link. Si necesitas control de acceso, considera proteger la página con Cloudflare Access o usar signed embeds (requiere backend).
-  -->
+  })
+</script>
 </body>
 </html>
