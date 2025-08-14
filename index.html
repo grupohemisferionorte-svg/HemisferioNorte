@@ -278,21 +278,26 @@ href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9z
   });
 
   search.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase()
+    const q = e.target.value.toLowerCase();
+  
     document.querySelectorAll('.item-parent').forEach(parent => {
-      const parentText = parent.querySelector(':scope > .item')?.textContent.toLowerCase() || ''
-      let anyChildVisible = false
+      const parentText = parent.querySelector(':scope > .item').textContent.toLowerCase();
+      let hasMatch = parentText.includes(q); // menú padre coincide
+  
       parent.querySelectorAll('.submenu .item').forEach(sub => {
-        const subText = sub.textContent.toLowerCase()
-        const visible = subText.includes(q) || parentText.includes(q)
-        sub.style.display = visible ? 'block' : 'none'
-        if(visible) anyChildVisible = true
-      })
-      if(parentText.includes(q)) anyChildVisible = true
-      parent.style.display = anyChildVisible ? 'flex' : 'none'
-      parent.classList.toggle('open', anyChildVisible && q)
-    })
-  })
+        const subText = sub.textContent.toLowerCase();
+        const match = subText.includes(q) || parentText.includes(q);
+        sub.style.display = match ? 'block' : 'none';
+        if(match) hasMatch = true;
+      });
+  
+      // expandir solo si hay coincidencias
+      parent.classList.toggle('open', hasMatch && q);
+    });
+  });
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
