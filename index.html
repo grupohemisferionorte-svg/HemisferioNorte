@@ -239,10 +239,32 @@
     if(src) window.open(src, '_blank')
   })
 
+  // Reload seguro (cross-origin friendly) + feedback visual
   reloadBtn.addEventListener('click', () => {
-    const iframe = document.getElementById('mainFrame')
-    if(iframe) iframe.contentWindow.location.reload()
-  })
+    const iframe = document.getElementById('mainFrame');
+    if (!iframe) return;
+
+    // disable + feedback
+    reloadBtn.disabled = true;
+    const prevText = reloadBtn.textContent;
+    reloadBtn.textContent = 'Recargando…';
+
+    try {
+      // Intentamos recarga "normal" (funciona si same-origin)
+      iframe.contentWindow.location.reload();
+      setTimeout(() => {
+        reloadBtn.disabled = false;
+        reloadBtn.textContent = prevText;
+      }, 1200);
+    } catch (err) {
+      // Fallback seguro para cross-origin: reasignar src para forzar recarga
+      iframe.src = iframe.src;
+      setTimeout(() => {
+        reloadBtn.disabled = false;
+        reloadBtn.textContent = prevText;
+      }, 1200);
+    }
+  });
 
   search.addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase()
@@ -254,4 +276,5 @@
 </script>
 </body>
 </html>
+
 
