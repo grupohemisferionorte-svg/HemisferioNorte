@@ -104,7 +104,6 @@
     border-bottom: 1px solid rgba(0,0,0,0.06);
     background: linear-gradient(180deg, #fff, #fbfdff);
   }
-  #pageTitle { font-weight:600 }
   .controls { margin-left: auto; display: flex; gap: 8px; }
   .btn {
     padding: 8px 12px;
@@ -135,16 +134,18 @@
       <div class="list" id="list">
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
 
-        <!-- Área Logística con submenu -->
+        <!-- Área Logística ahora con submenu (Compras + Bodega) -->
         <div class="item-parent">
           <div class="item">Área Logística</div>
           <div class="submenu">
+            <!-- Usé el link que ya tenías para logística como 'Compras' -->
             <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Compras</div>
+            <!-- Reemplaza el placeholder por el link real de Bodega cuando lo tengas -->
             <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Bodega</div>
           </div>
         </div>
 
-        <!-- Área Finanzas -->
+        <!-- Área Finanzas (mantengo submenu que ya configuraste) -->
         <div class="item-parent">
           <div class="item">Área Finanzas</div>
           <div class="submenu">
@@ -161,7 +162,7 @@
     </aside>
     <div>
       <header>
-        <div id="pageTitle">Dashboard</div>
+        <div style="font-weight:600">Dashboard</div>
         <div class="controls">
           <button class="btn" id="open">Abrir en pestaña</button>
           <button class="btn" id="reload">Recargar</button>
@@ -179,30 +180,13 @@
   const openBtn = document.getElementById('open')
   const reloadBtn = document.getElementById('reload')
   const search = document.getElementById('search')
-  const pageTitle = document.getElementById('pageTitle')
 
   function setActiveItem(el){
-    // quitar outline de todos
     document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
     el.style.outline = '2px solid var(--color-accent)'
-
-    // actualizar título del header (padre — subitem si aplica)
-    let titleText = (el.textContent || '').trim()
-    const parentEl = el.closest('.item-parent')
-    if (parentEl) {
-      const parentLabel = (parentEl.querySelector('> .item')?.textContent || '').trim()
-      if (parentLabel) titleText = `${parentLabel} — ${titleText}`
-      // asegurarnos que el padre esté abierto (visibilidad)
-      parentEl.classList.add('open')
-    }
-    pageTitle.textContent = titleText
-
-    // cargar iframe
     const src = el.dataset.src
     if(!src){
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>'
-      openBtn.dataset.src = ''
-      try { localStorage.removeItem('lastDashboard'); localStorage.removeItem('lastTitle'); } catch(e){}
       return
     }
     if(src.trim().startsWith('<iframe')){
@@ -216,51 +200,46 @@
     }
     openBtn.dataset.src = src
 
-    // Guardar selección en localStorage (src y título)
+    // Guardar selección en localStorage
     try {
       localStorage.setItem('lastDashboard', src)
-      localStorage.setItem('lastTitle', titleText)
     } catch (e) {
       console.warn('No se pudo guardar lastDashboard en localStorage:', e)
     }
   }
 
-  // Delegación de eventos en el contenedor .list
-  list.addEventListener('click', (e) => {
-    const clicked = e.target.closest('.item')
-    if (!clicked || !list.contains(clicked)) return
-
-    // Si es un item padre (label directo dentro de .item-parent), togglear submenu
-    if (clicked.parentElement && clicked.parentElement.classList && clicked.parentElement.classList.contains('item-parent')) {
-      const submenu = clicked.nextElementSibling
-      if (submenu && submenu.classList.contains('submenu')) {
-        // cerrar otros submenus abiertos (solo 1 abierto a la vez)
-        document.querySelectorAll('.item-parent.open').forEach(op => {
-          if (op !== clicked.parentElement) op.classList.remove('open')
-        })
-        clicked.parentElement.classList.toggle('open')
-        return
-      }
-    }
-
-    // Si el elemento tiene data-src, cargarlo
-    if (clicked.dataset && clicked.dataset.src) {
-      setActiveItem(clicked)
+  // 1) Ligar clic sólo a items que TIENEN data-src (items accionables)
+  document.querySelectorAll('.item').forEach(it => {
+    // Si es el item padre (hijo directo de .item-parent) no lo ligamos aquí
+    if (it.parentElement && it.parentElement.classList.contains('item-parent')) return
+    // Solo ligar si tiene data-src
+    if (it.dataset && it.dataset.src) {
+      it.addEventListener('click', () => setActiveItem(it))
     }
   })
 
-  // Inicializar: restaurar última selección (si existe) o seleccionar el primer item accionable
+  // 2) Toggle submenu en los items padres (sólo despliegan/ocultan)
+  document.querySelectorAll('.item-parent > .item').forEach(parent => {
+    parent.addEventListener('click', () => {
+      // cerrar otros submenus abiertos (solo 1 abierto a la vez)
+      document.querySelectorAll('.item-parent.open').forEach(op => {
+        if (op !== parent.parentElement) op.classList.remove('open')
+      })
+      parent.parentElement.classList.toggle('open');
+    });
+  });
+
+  // 3) Inicializar: restaurar última selección (si existe) o seleccionar el primer item accionable
   (function initSelection(){
     const last = (function(){ try { return localStorage.getItem('lastDashboard') } catch(e){ return null } })()
-    const lastTitle = (function(){ try { return localStorage.getItem('lastTitle') } catch(e){ return null } })()
     const start = last ? document.querySelector(`.item[data-src="${last}"]`) : document.querySelector('.item[data-src]')
     if (start) {
       // si el item está dentro de un submenu, abrir su padre
       const parentItem = start.closest('.item-parent')
       if (parentItem) parentItem.classList.add('open')
       setActiveItem(start)
-      if (lastTitle) pageTitle.textContent = lastTitle
     } else {
+      // si no hay ninguno accionable, mostrar mensaje
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">No hay dashboards configurados.</div>'
     }
   })()
@@ -275,17 +254,20 @@
     const iframe = document.getElementById('mainFrame');
     if (!iframe) return;
 
+    // disable + feedback
     reloadBtn.disabled = true;
     const prevText = reloadBtn.textContent;
     reloadBtn.textContent = 'Recargando…';
 
     try {
+      // Intentamos recarga "normal" (funciona si same-origin)
       iframe.contentWindow.location.reload();
       setTimeout(() => {
         reloadBtn.disabled = false;
         reloadBtn.textContent = prevText;
       }, 1200);
     } catch (err) {
+      // Fallback seguro para cross-origin: reasignar src para forzar recarga
       iframe.src = iframe.src;
       setTimeout(() => {
         reloadBtn.disabled = false;
