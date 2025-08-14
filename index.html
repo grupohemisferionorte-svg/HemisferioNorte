@@ -173,7 +173,7 @@ href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9z
     </aside>
     <div>
       <header>
-        <div style="font-weight:600">Dashboard</div>
+        <div id="pageTitle" style="font-weight:600; color:#003366;">Dashboard</div>
         <div class="controls">
           <button class="btn" id="open">Abrir en pestaña</button>
           <button class="btn" id="reload">Recargar</button>
@@ -196,6 +196,15 @@ href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9z
     document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
     el.style.outline = '2px solid var(--color-accent)'
     const src = el.dataset.src
+  
+    // === NUEVO: actualizar título ===
+    const submenuName = el.textContent.trim()
+    const parentMenu = el.closest('.item-parent')?.querySelector(':scope > .item')?.textContent.trim() || ''
+    document.getElementById('pageTitle').textContent = parentMenu && submenuName 
+        ? `${parentMenu} → ${submenuName}` 
+        : submenuName || 'Dashboard'
+    // ================================
+  
     if(!src){
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>'
       return
@@ -212,6 +221,7 @@ href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9z
     openBtn.dataset.src = src
     try { localStorage.setItem('lastDashboard', src) } catch (e) {}
   }
+
 
   document.querySelectorAll('.item').forEach(it => {
     if (it.parentElement && it.parentElement.classList.contains('item-parent')) return
