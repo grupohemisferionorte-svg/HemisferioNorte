@@ -135,12 +135,12 @@
       <div class="list" id="list">
         <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Área Comercial</div>
 
-        <!-- Área Logística ahora con submenu (Compras + Bodega) -->
+        <!-- Área Logística con submenu -->
         <div class="item-parent">
           <div class="item">Área Logística</div>
           <div class="submenu">
             <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Compras</div>
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/ID_BODEGA_REEMPLAZAR">Bodega</div>
+            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Bodega</div>
           </div>
         </div>
 
@@ -186,12 +186,14 @@
     document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
     el.style.outline = '2px solid var(--color-accent)'
 
-    // actualizar título del header
+    // actualizar título del header (padre — subitem si aplica)
     let titleText = (el.textContent || '').trim()
     const parentEl = el.closest('.item-parent')
     if (parentEl) {
       const parentLabel = (parentEl.querySelector('> .item')?.textContent || '').trim()
       if (parentLabel) titleText = `${parentLabel} — ${titleText}`
+      // asegurarnos que el padre esté abierto (visibilidad)
+      parentEl.classList.add('open')
     }
     pageTitle.textContent = titleText
 
@@ -200,7 +202,7 @@
     if(!src){
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>'
       openBtn.dataset.src = ''
-      try { localStorage.removeItem('lastDashboard'); } catch(e){}
+      try { localStorage.removeItem('lastDashboard'); localStorage.removeItem('lastTitle'); } catch(e){}
       return
     }
     if(src.trim().startsWith('<iframe')){
@@ -223,26 +225,31 @@
     }
   }
 
-  // 1) Ligar clic sólo a items que TIENEN data-src (items accionables)
-  document.querySelectorAll('.item').forEach(it => {
-    if (it.parentElement && it.parentElement.classList.contains('item-parent')) return
-    if (it.dataset && it.dataset.src) {
-      it.addEventListener('click', () => setActiveItem(it))
+  // Delegación de eventos en el contenedor .list
+  list.addEventListener('click', (e) => {
+    const clicked = e.target.closest('.item')
+    if (!clicked || !list.contains(clicked)) return
+
+    // Si es un item padre (label directo dentro de .item-parent), togglear submenu
+    if (clicked.parentElement && clicked.parentElement.classList && clicked.parentElement.classList.contains('item-parent')) {
+      const submenu = clicked.nextElementSibling
+      if (submenu && submenu.classList.contains('submenu')) {
+        // cerrar otros submenus abiertos (solo 1 abierto a la vez)
+        document.querySelectorAll('.item-parent.open').forEach(op => {
+          if (op !== clicked.parentElement) op.classList.remove('open')
+        })
+        clicked.parentElement.classList.toggle('open')
+        return
+      }
+    }
+
+    // Si el elemento tiene data-src, cargarlo
+    if (clicked.dataset && clicked.dataset.src) {
+      setActiveItem(clicked)
     }
   })
 
-  // 2) Toggle submenu en los items padres (sólo despliegan/ocultan)
-  document.querySelectorAll('.item-parent > .item').forEach(parent => {
-    parent.addEventListener('click', () => {
-      // cerrar otros submenus abiertos (solo 1 abierto a la vez)
-      document.querySelectorAll('.item-parent.open').forEach(op => {
-        if (op !== parent.parentElement) op.classList.remove('open')
-      })
-      parent.parentElement.classList.toggle('open');
-    });
-  });
-
-  // 3) Inicializar: restaurar última selección (si existe) o seleccionar el primer item accionable
+  // Inicializar: restaurar última selección (si existe) o seleccionar el primer item accionable
   (function initSelection(){
     const last = (function(){ try { return localStorage.getItem('lastDashboard') } catch(e){ return null } })()
     const lastTitle = (function(){ try { return localStorage.getItem('lastTitle') } catch(e){ return null } })()
@@ -252,10 +259,8 @@
       const parentItem = start.closest('.item-parent')
       if (parentItem) parentItem.classList.add('open')
       setActiveItem(start)
-      // si hay título guardado y por alguna razón setActiveItem no lo dejó, lo restauramos
       if (lastTitle) pageTitle.textContent = lastTitle
     } else {
-      // si no hay ninguno accionable, mostrar mensaje
       frameContainer.innerHTML = '<div style="padding:20px;color:#666">No hay dashboards configurados.</div>'
     }
   })()
@@ -270,20 +275,17 @@
     const iframe = document.getElementById('mainFrame');
     if (!iframe) return;
 
-    // disable + feedback
     reloadBtn.disabled = true;
     const prevText = reloadBtn.textContent;
     reloadBtn.textContent = 'Recargando…';
 
     try {
-      // Intentamos recarga "normal" (funciona si same-origin)
       iframe.contentWindow.location.reload();
       setTimeout(() => {
         reloadBtn.disabled = false;
         reloadBtn.textContent = prevText;
       }, 1200);
     } catch (err) {
-      // Fallback seguro para cross-origin: reasignar src para forzar recarga
       iframe.src = iframe.src;
       setTimeout(() => {
         reloadBtn.disabled = false;
