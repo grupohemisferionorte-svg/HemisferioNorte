@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Portal Control Financiero y Operacional</title>
-<link rel="icon" type="image/svg+xml" 
-href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAwMDMzNiIvPjx0ZXh0IHg9IjUwIiB5PSI1NiIgZm9udC1zaXplPSI1NiIgZm9udC1mYW1pbHk9IkludGVyLCBBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkdIPC90ZXh0Pjwvc3ZnPg==">
+<title>Portal Control Financiero y Operacional — v2</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAwMDMzNiIvPjx0ZXh0IHg9IjUwIiB5PSI1NiIgZm9udC1zaXplPSI1NiIgZm9udC1mYW1pbHk9IkludGVyLCBBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkdIPC90ZXh0Pjwvc3ZnPg==">
 <style>
   :root {
     --color-primary: #003366;
@@ -13,300 +12,288 @@ href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9z
     --color-bg: #f6f7fb;
     --color-muted: #6b7280;
     --color-card: #ffffff;
+    --sidebar-w: 260px;
   }
-  html, body {
-    height: 100%; margin: 0;
-    font-family: 'Inter', system-ui, Arial, sans-serif;
-    background: var(--color-bg);
-  }
-  .app {
-    display: grid; grid-template-columns: 260px 1fr; height: 100vh;
-  }
+  html, body { height:100%; margin:0; font-family: 'Inter', system-ui, Arial, sans-serif; background:var(--color-bg); }
+  .app { display:grid; grid-template-columns: var(--sidebar-w) 1fr; height:100vh; }
   aside {
     background: linear-gradient(180deg, var(--color-primary) 0%, #001f3f 100%);
-    padding: 20px;
-    color: white;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.06);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    padding:20px; color:white; box-shadow:2px 0 8px rgba(0,0,0,0.06); display:flex; flex-direction:column;
   }
-  .brand {
-    font-weight: 700; font-size: 18px; margin-bottom: 4px;
-  }
-  .logo {
-    margin: 10px 0 16px 0;
-    display: flex;
-    justify-content: center;
-  }
-  .logo img {
-    max-width: 140px;
-    height: auto;
-    border-radius: 6px;
-    padding: 4px;
-  }
-  .desc {
-    font-size: 13px;
-    color: rgba(255,255,255,0.8);
-    margin-bottom: 12px;
-  }
-  .search {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    border: none;
-    margin-bottom: 12px;
-  }
-  .list {
-    display: flex; flex-direction: column; gap: 8px;
-    flex-grow: 1;
-  }
-  .item {
-    background: var(--color-card);
-    color: #003366;
-    padding: 8px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 1px solid rgba(0,0,0,0.04);
-    transition: all 0.2s ease;
-  }
-  .item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(2,6,23,0.12);
-    border-color: var(--color-accent);
-  }
-  .item-parent .submenu {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    margin-left: 12px;
-  }
-  .item-parent.open .submenu {
-    display: flex;
-  }
-  .item-parent > .item {
-    position: relative;
-  }
-  .item-parent > .item::after {
-    content: '►';
-    position: absolute;
-    right: 10px;
-    transition: transform 0.2s ease;
-    font-size: 12px;
-  }
-  .item-parent.open > .item::after {
-    transform: rotate(90deg);
-  }
-  header {
-    display: flex; gap: 10px; align-items: center;
-    padding: 12px 18px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    background: linear-gradient(180deg, #fff, #fbfdff);
-  }
-  .controls { margin-left: auto; display: flex; gap: 8px; }
-  .btn {
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: var(--color-accent);
-    color: white; border: 0; cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .btn:hover { background: #019c80; }
-  .frame-wrap { height: calc(100vh - 56px); }
-  iframe { width: 100%; height: 100%; border: 0; }
-  @media (max-width:900px) {
+  .brand { font-weight:700; font-size:18px; margin-bottom:4px; }
+  .top-row { display:flex; gap:8px; align-items:center; }
+  .logo { margin:10px 0 16px 0; display:flex; justify-content:center; }
+  .logo img { max-width:140px; height:auto; border-radius:6px; padding:4px; }
+  .desc { font-size:13px; color:rgba(255,255,255,0.8); margin-bottom:12px; }
+  .search { width:100%; padding:8px; border-radius:8px; border:none; margin-bottom:12px; }
+  .list { display:flex; flex-direction:column; gap:8px; overflow:auto; padding-bottom:8px; }
+  .item, .parent-btn { background:var(--color-card); color:#003366; padding:8px 10px; border-radius:8px; cursor:pointer; border:1px solid rgba(0,0,0,0.04); transition:all 0.18s ease; }
+  .item:hover, .parent-btn:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(2,6,23,0.12); border-color:var(--color-accent); }
+  .item:focus, .parent-btn:focus { outline:2px solid var(--color-accent); }
+  .item-parent { display:flex; flex-direction:column; gap:6px; }
+  .submenu { display:flex; flex-direction:column; gap:6px; margin-left:12px; }
+  .parent-row { display:flex; align-items:center; justify-content:space-between; }
+  .caret { font-size:12px; margin-left:8px; transform:rotate(0deg); transition:transform 0.18s ease; }
+  .open .caret { transform:rotate(90deg); }
+  header { display:flex; gap:10px; align-items:center; padding:12px 18px; border-bottom:1px solid rgba(0,0,0,0.06); background:linear-gradient(180deg,#fff,#fbfdff); }
+  .controls { margin-left:auto; display:flex; gap:8px; align-items:center; }
+  .btn { padding:8px 12px; border-radius:8px; background:var(--color-accent); color:white; border:0; cursor:pointer; transition:background 0.2s ease; }
+  .btn:hover { background:#019c80; }
+  .frame-wrap { height:calc(100vh - 56px); position:relative; }
+  iframe { width:100%; height:100%; border:0; display:block; }
+  .hidden { display:none !important; }
+  .sidebar-toggle { display:none; }
+  .meta { margin-top:12px; color:rgba(255,255,255,0.6); font-size:12px; }
+  /* spinner */
+  .spinner { position:absolute; left:50%; top:48%; transform:translate(-50%,-50%); background:rgba(255,255,255,0.92); padding:14px 18px; border-radius:10px; display:flex; gap:10px; align-items:center; box-shadow:0 6px 26px rgba(2,6,23,0.12); }
+  .dot { width:10px; height:10px; border-radius:50%; background:var(--color-muted); animation:spin 1s infinite linear; }
+  @keyframes spin { 0%{transform:scale(1)} 50%{transform:scale(0.5)} 100%{transform:scale(1)} }
+  .error-box { position:absolute; left:50%; top:45%; transform:translate(-50%,-50%); background:#fff3f2; color:#7a1f1f; border:1px solid #f1c0bf; padding:16px; border-radius:10px; box-shadow:0 6px 26px rgba(2,6,23,0.06); }
+  /* responsive */
+  @media(max-width:900px){
     .app { grid-template-columns: 1fr; }
-    aside { display: none; }
+    aside { position:fixed; z-index:40; left:0; top:0; bottom:0; width:var(--sidebar-w); transform:translateX(-110%); transition:transform .22s ease; }
+    aside.open { transform:translateX(0); }
+    .sidebar-toggle { display:inline-flex; padding:8px; border-radius:8px; background:var(--color-card); color:#003366; border:1px solid rgba(0,0,0,0.06); cursor:pointer; }
   }
 </style>
 </head>
 <body>
-  <div class="app">
-    <aside>
+  <div class="app" id="app">
+    <aside id="sidebar" aria-label="Navegación">
       <div class="brand">Portal Reportería</div>
-      <div class="logo">
-        <img src="https://raw.githubusercontent.com/grupohemisferionorte-svg/HemisferioNorte/refs/heads/main/LOGO_GRUPO_HEMISFERIO_OK.ai_preview%20(1).png" 
-             alt="Logo Grupo Hemisferio">
+      <div class="top-row">
+        <div class="logo"><img src="https://raw.githubusercontent.com/grupohemisferionorte-svg/HemisferioNorte/refs/heads/main/LOGO_GRUPO_HEMISFERIO_OK.ai_preview%20(1).png" alt="Logo Grupo Hemisferio"></div>
       </div>
       <div class="desc">Seleccionar el área para visualizar el reporte creado.</div>
-      <input class="search" id="search" placeholder="Buscar...">
-      <div class="list" id="list">
-
-        <!-- Comercial -->
-        <div class="item-parent">
-          <div class="item">Área Comercial</div>
-          <div class="submenu">
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd">Ventas</div>
-          </div>
-        </div>
-
-        <!-- Logística -->
-        <div class="item-parent">
-          <div class="item">Área Logística</div>
-          <div class="submenu">
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e">Compras</div>
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Bodega</div>
-          </div>
-        </div>
-
-        <!-- Finanzas -->
-        <div class="item-parent">
-          <div class="item">Área Finanzas</div>
-          <div class="submenu">
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/46c706f5-31d0-4ccc-9583-197c38122dfb">Facturación Pendiente</div>
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/75bb31c4-d0ce-4b9e-9dae-9bd9b58ffa39">Facturación Proveedores</div>
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3">Facturación Ventas</div>
-          </div>
-        </div>
-
-        <!-- Contabilidad -->
-        <div class="item-parent">
-          <div class="item">Área Contabilidad</div>
-          <div class="submenu">
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664">Cuenta Corriente</div>
-          </div>
-        </div>
-
-        <!-- Proyectos -->
-        <div class="item-parent">
-          <div class="item">Proyectos</div>
-          <div class="submenu">
-            <div class="item" data-src="https://hnsa.metabaseapp.com/public/dashboard/98cec8a6-2b77-490f-8cc4-e1a9da6ef4d6">Rentabilidad Proyectos</div>
-          </div>
-        </div>        
-
-      </div>
-      <div style="margin-top:12px;color:rgba(255,255,255,0.6);font-size:12px">
-        Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail.
-      </div>
+      <input class="search" id="search" placeholder="Buscar..." aria-label="Buscar reportes">
+      <div class="list" id="list" role="tree"></div>
+      <div class="meta">Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail. (noreply@metabaseapp.com)</div>
     </aside>
+
     <div>
       <header>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-expanded="false">☰</button>
         <div id="pageTitle" style="font-weight:600; color:#003366;">Dashboard</div>
         <div class="controls">
           <button class="btn" id="open">Abrir en pestaña</button>
           <button class="btn" id="reload">Recargar</button>
         </div>
       </header>
-      <div class="frame-wrap">
+      <div class="frame-wrap" id="frameWrap">
         <div id="frameContainer" style="width:100%;height:100%"></div>
+        <div id="spinner" class="spinner hidden" role="status" aria-hidden="true"><div class="dot"></div><div>Cargando dashboard…</div></div>
+        <div id="errorBox" class="error-box hidden" role="alert"></div>
       </div>
     </div>
   </div>
 
 <script>
-  const list = document.getElementById('list')
-  const frameContainer = document.getElementById('frameContainer')
-  const openBtn = document.getElementById('open')
-  const reloadBtn = document.getElementById('reload')
-  const search = document.getElementById('search')
+// ====== Menu data (más fácil de mantener) ======
+const menuData = [
+  { title: 'Área Comercial', items: [ {title:'Ventas', src:'https://hnsa.metabaseapp.com/public/dashboard/18f4ab24-c16a-462e-9954-d572ff5a84dd'} ] },
+  { title: 'Área Logística', items: [ {title:'Compras', src:'https://hnsa.metabaseapp.com/public/dashboard/889b4693-b3ae-4e21-b1e7-d10837bf5a8e'}, {title:'Bodega', src:'https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664'} ] },
+  { title: 'Área Finanzas', items: [ {title:'Facturación Pendiente', src:'https://hnsa.metabaseapp.com/public/dashboard/46c706f5-31d0-4ccc-9583-197c38122dfb'}, {title:'Facturación Proveedores', src:'https://hnsa.metabaseapp.com/public/dashboard/75bb31c4-d0ce-4b9e-9dae-9bd9b58ffa39'}, {title:'Facturación Ventas', src:'https://hnsa.metabaseapp.com/public/dashboard/48cb774e-285c-4a63-807f-fbd9d53ac3b3'} ] },
+  { title: 'Área Contabilidad', items: [ {title:'Cuenta Corriente', src:'https://hnsa.metabaseapp.com/public/dashboard/b988436f-b209-4241-a0a8-b1968f1be664'} ] },
+  { title: 'Proyectos', items: [ {title:'Rentabilidad Proyectos', src:'https://hnsa.metabaseapp.com/public/dashboard/98cec8a6-2b77-490f-8cc4-e1a9da6ef4d6'} ] }
+];
 
-  function setActiveItem(el){
-    document.querySelectorAll('.item').forEach(i => i.style.outline = 'none')
-    el.style.outline = '2px solid var(--color-accent)'
-    const src = el.dataset.src
-  
-    // === NUEVO: actualizar título ===
-    const submenuName = el.textContent.trim()
-    const parentMenu = el.closest('.item-parent')?.querySelector(':scope > .item')?.textContent.trim() || ''
-    document.getElementById('pageTitle').textContent = parentMenu && submenuName 
-        ? `${parentMenu} → ${submenuName}` 
-        : submenuName || 'Dashboard'
-    // ================================
-  
-    if(!src){
-      frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>'
-      return
-    }
-    if(src.trim().startsWith('<iframe')){
-      frameContainer.innerHTML = src
-    } else {
-      frameContainer.innerHTML = ''
-      const iframe = document.createElement('iframe')
-      iframe.src = src
-      iframe.id = 'mainFrame'
-      frameContainer.appendChild(iframe)
-    }
-    openBtn.dataset.src = src
-    try { localStorage.setItem('lastDashboard', src) } catch (e) {}
+const listEl = document.getElementById('list');
+const frameContainer = document.getElementById('frameContainer');
+const openBtn = document.getElementById('open');
+const reloadBtn = document.getElementById('reload');
+const search = document.getElementById('search');
+const spinner = document.getElementById('spinner');
+const errorBox = document.getElementById('errorBox');
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+
+let currentSrc = null;
+let iframe = null;
+let loadTimeout = null;
+
+function renderMenu(data){
+  listEl.innerHTML = '';
+  data.forEach(group => {
+    const parent = document.createElement('div');
+    parent.className = 'item-parent';
+    parent.setAttribute('role','treeitem');
+
+    const parentBtn = document.createElement('button');
+    parentBtn.className = 'parent-btn';
+    parentBtn.innerHTML = `<span>${group.title}</span><span class="caret">►</span>`;
+    parentBtn.type = 'button';
+    parentBtn.setAttribute('aria-expanded','false');
+
+    const submenu = document.createElement('div');
+    submenu.className = 'submenu';
+    submenu.setAttribute('role','group');
+
+    (group.items || []).forEach(item => {
+      const it = document.createElement('button');
+      it.className = 'item';
+      it.type = 'button';
+      it.textContent = item.title;
+      it.dataset.src = item.src || '';
+      it.setAttribute('tabindex','0');
+      it.addEventListener('click', () => setActiveItem(it));
+      it.addEventListener('keydown', (ev) => { if(ev.key==='Enter') setActiveItem(it) });
+      submenu.appendChild(it);
+    });
+
+    parent.appendChild(parentBtn);
+    parent.appendChild(submenu);
+    listEl.appendChild(parent);
+
+    // parent toggle (expand only)
+    parentBtn.addEventListener('click', () => {
+      const isOpen = parent.classList.toggle('open');
+      parentBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+  });
+}
+
+function setActiveItem(el){
+  document.querySelectorAll('.item').forEach(i => i.style.outline = 'none');
+  el.style.outline = '2px solid var(--color-accent)';
+  const src = el.dataset.src;
+  const submenuName = el.textContent.trim();
+  const parentMenu = el.closest('.item-parent')?.querySelector(':scope > .parent-btn')?.textContent.trim().replace('►','')?.trim() || '';
+  document.getElementById('pageTitle').textContent = parentMenu && submenuName ? `${parentMenu} → ${submenuName}` : submenuName || 'Dashboard';
+  currentSrc = src;
+  openBtn.dataset.src = src;
+  try { localStorage.setItem('lastDashboard', src) } catch(e){}
+
+  // show frame or message
+  if(!src){
+    frameContainer.innerHTML = '<div style="padding:20px;color:#666">Este item no tiene link público configurado.</div>';
+    return;
   }
 
+  // create iframe if needed (single iframe strategy)
+  if(!iframe){
+    iframe = document.createElement('iframe');
+    iframe.id = 'mainFrame';
+    iframe.loading = 'eager';
+    iframe.setAttribute('title','Dashboard público');
+    iframe.addEventListener('load', onIframeLoad);
+    iframe.addEventListener('error', onIframeError);
+    frameContainer.innerHTML = '';
+    frameContainer.appendChild(iframe);
+  }
 
-  document.querySelectorAll('.item').forEach(it => {
-    if (it.parentElement && it.parentElement.classList.contains('item-parent')) return
-    if (it.dataset && it.dataset.src) {
-      it.addEventListener('click', () => setActiveItem(it))
-    }
-  })
+  // show spinner and start timeout
+  showSpinner(true);
+  clearTimeout(loadTimeout);
+  loadTimeout = setTimeout(() => {
+    // si no carga en 8s, mostrar mensaje de posible bloqueo por X-Frame-Options
+    showSpinner(false);
+    showError('No fue posible cargar el dashboard dentro de los 8 segundos. Si la página bloquea embedding (X-Frame-Options), abra el dashboard en una nueva pestaña.');
+  }, 8000);
 
-  document.querySelectorAll('.item-parent > .item').forEach(parent => {
-    parent.addEventListener('click', () => {
-      document.querySelectorAll('.item-parent.open').forEach(op => {
-        if (op !== parent.parentElement) op.classList.remove('open')
-      })
-      parent.parentElement.classList.toggle('open');
+  try {
+    iframe.src = src;
+  } catch(e){
+    showSpinner(false);
+    showError('Error al asignar la URL al iframe.');
+  }
+}
+
+function onIframeLoad(){
+  clearTimeout(loadTimeout);
+  showSpinner(false);
+  hideError();
+}
+function onIframeError(){
+  clearTimeout(loadTimeout);
+  showSpinner(false);
+  showError('Error cargando el dashboard. Puede abrirlo en una nueva pestaña.');
+}
+
+function showSpinner(show){
+  spinner.classList.toggle('hidden', !show);
+  spinner.setAttribute('aria-hidden', String(!show));
+}
+function showError(msg){
+  errorBox.textContent = msg;
+  errorBox.classList.remove('hidden');
+}
+function hideError(){
+  errorBox.classList.add('hidden');
+}
+
+openBtn.addEventListener('click', () => {
+  const src = openBtn.dataset.src;
+  if(src) window.open(src, '_blank');
+});
+
+reloadBtn.addEventListener('click', () => {
+  if(!iframe) return;
+  reloadBtn.disabled = true;
+  const prev = reloadBtn.textContent;
+  reloadBtn.textContent = 'Recargando…';
+  try{
+    iframe.contentWindow.location.reload();
+    setTimeout(()=>{ reloadBtn.disabled=false; reloadBtn.textContent=prev; }, 1200);
+  }catch(err){
+    // fallback
+    const current = iframe.src;
+    iframe.src = '';
+    setTimeout(()=>{ iframe.src = current; reloadBtn.disabled=false; reloadBtn.textContent=prev; }, 300);
+  }
+});
+
+search.addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('.item-parent').forEach(parent => {
+    const parentText = parent.querySelector(':scope > .parent-btn').textContent.toLowerCase();
+    let hasMatch = parentText.includes(q);
+    parent.querySelectorAll('.submenu .item').forEach(sub => {
+      const subText = sub.textContent.toLowerCase();
+      const match = subText.includes(q) || parentText.includes(q);
+      sub.style.display = match ? 'block' : 'none';
+      if(match) hasMatch = true;
     });
+    // expand only if query and hasMatch
+    if(q) parent.classList.toggle('open', hasMatch);
+    else parent.classList.remove('open');
   });
+});
 
-  (function initSelection(){
-    const last = (function(){ try { return localStorage.getItem('lastDashboard') } catch(e){ return null } })()
-    const start = last ? document.querySelector(`.item[data-src="${last}"]`) : document.querySelector('.item[data-src]')
-    if (start) {
-      const parentItem = start.closest('.item-parent')
-      if (parentItem) parentItem.classList.add('open')
-      setActiveItem(start)
-    } else {
-      frameContainer.innerHTML = '<div style="padding:20px;color:#666">No hay dashboards configurados.</div>'
-    }
-  })()
+// keyboard navigation: allow arrow keys between visible items
+listEl.addEventListener('keydown', (e) => {
+  const focusable = Array.from(listEl.querySelectorAll('.item')).filter(n => n.offsetParent !== null);
+  const idx = focusable.indexOf(document.activeElement);
+  if(e.key === 'ArrowDown') { e.preventDefault(); const next = focusable[(idx+1)%focusable.length]; next?.focus(); }
+  if(e.key === 'ArrowUp') { e.preventDefault(); const prev = focusable[(idx-1+focusable.length)%focusable.length]; prev?.focus(); }
+});
 
-  openBtn.addEventListener('click', () => {
-    const src = openBtn.dataset.src
-    if(src) window.open(src, '_blank')
-  })
+// small-screen toggle
+sidebarToggle.addEventListener('click', () => {
+  const open = sidebar.classList.toggle('open');
+  sidebarToggle.setAttribute('aria-expanded', String(open));
+});
 
-  reloadBtn.addEventListener('click', () => {
-    const iframe = document.getElementById('mainFrame');
-    if (!iframe) return;
-    reloadBtn.disabled = true;
-    const prevText = reloadBtn.textContent;
-    reloadBtn.textContent = 'Recargando…';
-    try {
-      iframe.contentWindow.location.reload();
-      setTimeout(() => {
-        reloadBtn.disabled = false;
-        reloadBtn.textContent = prevText;
-      }, 1200);
-    } catch (err) {
-      iframe.src = iframe.src;
-      setTimeout(() => {
-        reloadBtn.disabled = false;
-        reloadBtn.textContent = prevText;
-      }, 1200);
-    }
-  });
+// init
+renderMenu(menuData);
+(function initSelection(){
+  const last = (function(){ try { return localStorage.getItem('lastDashboard') } catch(e){ return null } })();
+  // try find the matching element
+  const start = last ? document.querySelector(`.item[data-src="${last}"]`) : document.querySelector('.item[data-src]');
+  if(start){
+    // open parent
+    const parentItem = start.closest('.item-parent');
+    if(parentItem) parentItem.classList.add('open');
+    setTimeout(()=> setActiveItem(start), 50);
+  } else {
+    frameContainer.innerHTML = '<div style="padding:20px;color:#666">No hay dashboards configurados.</div>';
+  }
+})();
 
-  search.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-  
-    document.querySelectorAll('.item-parent').forEach(parent => {
-      const parentText = parent.querySelector(':scope > .item').textContent.toLowerCase();
-      let hasMatch = parentText.includes(q); // menú padre coincide
-  
-      parent.querySelectorAll('.submenu .item').forEach(sub => {
-        const subText = sub.textContent.toLowerCase();
-        const match = subText.includes(q) || parentText.includes(q);
-        sub.style.display = match ? 'block' : 'none';
-        if(match) hasMatch = true;
-      });
-  
-      // expandir solo si hay coincidencias
-      parent.classList.toggle('open', hasMatch && q);
-    });
-  });
+// accessible focus on first item
+listEl.querySelectorAll('.item')[0]?.setAttribute('tabindex','0');
+
 </script>
 </body>
 </html>
-</script>
-</body>
-</html>
+
