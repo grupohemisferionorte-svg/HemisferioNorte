@@ -31,7 +31,8 @@
   .item:hover, .parent-btn:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(2,6,23,0.12); border-color:var(--color-accent); }
   .item:focus, .parent-btn:focus { outline:2px solid var(--color-accent); }
   .item-parent { display:flex; flex-direction:column; gap:6px; }
-  .submenu { display:flex; flex-direction:column; gap:6px; margin-left:12px; }
+  .submenu { display:none; flex-direction:column; gap:6px; margin-left:12px; }
+  .item-parent.open .submenu { display:flex; }
   .parent-row { display:flex; align-items:center; justify-content:space-between; }
   .caret { font-size:12px; margin-left:8px; transform:rotate(0deg); transition:transform 0.18s ease; }
   .open .caret { transform:rotate(90deg); }
@@ -68,7 +69,7 @@
       <div class="desc">Seleccionar el área para visualizar el reporte creado.</div>
       <input class="search" id="search" placeholder="Buscar..." aria-label="Buscar reportes">
       <div class="list" id="list" role="tree"></div>
-      <div class="meta">Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail. (noreply@metabaseapp.com)</div>
+      <div class="meta">Consejo: Si se necesita crear reportes específicos, favor solicitarlo via mail.</div>
     </aside>
 
     <div>
@@ -147,6 +148,14 @@ function renderMenu(data){
 
     // parent toggle (expand only)
     parentBtn.addEventListener('click', () => {
+      // accordion behaviour: close other open parents first
+      document.querySelectorAll('.item-parent.open').forEach(p => {
+        if (p !== parent) {
+          p.classList.remove('open');
+          const btn = p.querySelector('.parent-btn');
+          if (btn) btn.setAttribute('aria-expanded','false');
+        }
+      });
       const isOpen = parent.classList.toggle('open');
       parentBtn.setAttribute('aria-expanded', String(isOpen));
     });
@@ -296,4 +305,3 @@ listEl.querySelectorAll('.item')[0]?.setAttribute('tabindex','0');
 </script>
 </body>
 </html>
-
